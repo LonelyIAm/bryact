@@ -7,14 +7,12 @@ const App = () => {
   const [todos, setTodos] = useState([]);
   const [filter, setFilter] = useState("all");
 
-  return c(
-    "main",
-    [
-      c(TodoBar, { todos, setTodos, setFilter }),
-      c(Todos, { todos, setTodos, filter }),
+  return c("main", null, {
+    children: [
+      c(TodoBar, { todos, setTodos, setFilter }, { children: [] }),
+      c(Todos, { todos, setTodos, filter }, { children: [] }),
     ],
-    null
-  );
+  });
 };
 
 export default App;

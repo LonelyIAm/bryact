@@ -12,9 +12,8 @@ const Todos = ({ todos, setTodos, filter }) => {
   const handleDeleteTodo = (id) =>
     setTodos(todos().filter((Todo) => Todo.id !== id));
 
-  return c(
-    "ul",
-    useMemo(() =>
+  return c("ul", null, {
+    children: useMemo(() =>
       todos()
         .filter((todo) => {
           if (filter() === "done") {
@@ -28,15 +27,19 @@ const Todos = ({ todos, setTodos, filter }) => {
           return true;
         })
         .map(({ todo, id, done }) =>
-          c(Todo, {
-            todo,
-            done,
-            remove: handleDeleteTodo.bind(null, id),
-            toggle: handleToggleTodo.bind(null, id),
-          })
+          c(
+            Todo,
+            {
+              todo,
+              done,
+              remove: handleDeleteTodo.bind(null, id),
+              toggle: handleToggleTodo.bind(null, id),
+            },
+            { children: [] }
+          )
         )
-    )
-  );
+    ),
+  });
 };
 
 export default Todos;

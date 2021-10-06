@@ -25,6 +25,12 @@ export const useState = (value) => {
   return [read, write];
 };
 
+export const useStateWithoutEffect = (value) => {
+  const read = () => value;
+  const write = (nextValue) => (value = nextValue);
+  return [read, write];
+};
+
 const cleanup = (running) => {
   for (const dep of running.dependencies) {
     dep.delete(running);
