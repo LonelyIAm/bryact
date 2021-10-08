@@ -21,6 +21,8 @@ const processChildren = (children, effect, noeffect) => {
 
 const populateWithChildren = (children, element) => {
   try {
+    element.nodeName === "UL" && console.log("done", element.hasChildNodes());
+
     let [first, setFirst] = useStateWithoutEffect(true);
     const method = (c) => {
       c.forEach((child, idx) => {
@@ -32,21 +34,28 @@ const populateWithChildren = (children, element) => {
         else if (child) element.appendChild(child);
 
         useEffect(() => {
-          if (!first()) {
-            console.log("updating");
+          if (!first() && element.hasChildNodes()) {
             if (typeof child === "string")
               element.replaceChild(
                 document.createTextNode(child),
-                element.chilNodes[idx]
+                element.childNodes[idx]
               );
             else if (typeof child === "function" && typeof child() === "string")
               element.replaceChild(
                 document.createTextNode(child()),
-                element.chilNodes[idx]
+                element.childNodes[idx]
               );
             else if (typeof child === "function")
-              element.replaceChild(child(), element.chilNodes[idx]);
-            else if (child) element.replaceChild(child, element.chilNodes[idx]);
+              element.replaceChild(child(), element.childNodes[idx]);
+            else if (child)
+              element.replaceChild(child, element.childNodes[idx]);
+          } else if (!first()) {
+            if (typeof child === "string")
+              element.appendChild(document.createTextNode(child));
+            else if (typeof child === "function" && typeof child() === "string")
+              element.appendChild(document.createTextNode(child()));
+            else if (typeof child === "function") element.appendChild(child());
+            else if (child) element.appendChild(child);
           }
         });
       });
@@ -54,8 +63,8 @@ const populateWithChildren = (children, element) => {
 
     processChildren(
       children,
-      (children) => () => method(children()),
-      (children) => method(children)
+      (c) => () => method(c()),
+      (c) => method(c)
     );
     setFirst(false);
   } catch (error) {
@@ -65,6 +74,7 @@ const populateWithChildren = (children, element) => {
 
 const makeElement = (element, children, props) => {
   const el = document.createElement(element);
+  element === "ul" && console.log("continuing");
 
   if (props && typeof props !== "function") {
     populateWithProps(props, el);
@@ -86,6 +96,7 @@ const makeComponent = (element, props) => {
 };
 
 const c = (element, props, { children }) => {
+  element === "ul" && console.log("doing");
   if (element && typeof element === "string") {
     return makeElement(element, children, props);
   } else {
