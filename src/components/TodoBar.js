@@ -60,8 +60,12 @@ const TodoBar = ({ todos, setTodos, setFilter }) => {
         { children: ["Add Todo"] }
       ),
       c("span", null, {
-        children: () =>
-          `Done: ${todosDoneLength()} | Not Done: ${todosUndoneLength()}`,
+        children: [
+          useMemo(
+            () =>
+              `Done: ${todosDoneLength()} | Not Done: ${todosUndoneLength()}`
+          ),
+        ],
       }),
     ],
   });

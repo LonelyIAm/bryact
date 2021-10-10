@@ -21,8 +21,6 @@ const processChildren = (children, effect, noeffect) => {
 
 const populateWithChildren = (children, element) => {
   try {
-    element.nodeName === "UL" && console.log("done", element.hasChildNodes());
-
     let [first, setFirst] = useStateWithoutEffect(true);
     const method = (c) => {
       c.forEach((child, idx) => {
@@ -33,8 +31,10 @@ const populateWithChildren = (children, element) => {
         else if (typeof child === "function") element.appendChild(child());
         else if (child) element.appendChild(child);
 
+        const hasChildren = element.hasChildNodes();
+
         useEffect(() => {
-          if (!first() && element.hasChildNodes()) {
+          if (!first() && hasChildren && element.childNodes.length) {
             if (typeof child === "string")
               element.replaceChild(
                 document.createTextNode(child),
@@ -45,11 +45,15 @@ const populateWithChildren = (children, element) => {
                 document.createTextNode(child()),
                 element.childNodes[idx]
               );
-            else if (typeof child === "function")
+            else if (typeof child === "function") {
               element.replaceChild(child(), element.childNodes[idx]);
-            else if (child)
+              element.nodeName === "SPAN" &&
+                console.log(child(), element.childNodes[idx]);
+            } else if (child)
               element.replaceChild(child, element.childNodes[idx]);
           } else if (!first()) {
+            console.log(children);
+            element.innerHTML = "";
             if (typeof child === "string")
               element.appendChild(document.createTextNode(child));
             else if (typeof child === "function" && typeof child() === "string")
@@ -68,13 +72,12 @@ const populateWithChildren = (children, element) => {
     );
     setFirst(false);
   } catch (error) {
-    console.log(element, children);
+    console.log(element, children, error && true);
   }
 };
 
 const makeElement = (element, children, props) => {
   const el = document.createElement(element);
-  element === "ul" && console.log("continuing");
 
   if (props && typeof props !== "function") {
     populateWithProps(props, el);
@@ -96,7 +99,6 @@ const makeComponent = (element, props) => {
 };
 
 const c = (element, props, { children }) => {
-  element === "ul" && console.log("doing");
   if (element && typeof element === "string") {
     return makeElement(element, children, props);
   } else {
